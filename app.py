@@ -18,9 +18,9 @@ def main():
 
 @app.route('/import', methods=['POST'])
 def importer():
-	f = request.files['file']
-	f.save(secure_filename(f.filename))
-	df = utils.read_excel(secure_filename(f.filename))
+	f_cats = request.files['file_cats']
+	f_cats.save(secure_filename(f_cats.filename))
+	df = utils.read_excel(secure_filename(f_cats.filename))
 
 	return render_template('main.html', 
 							employees_count=utils.employees_count(df), 
