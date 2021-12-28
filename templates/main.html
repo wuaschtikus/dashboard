@@ -1,131 +1,287 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Probability Distributions</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+// https://kb.objectrocket.com/postgresql/python-import-csv-into-postgres-908
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Probability Distributions</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
 	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js" integrity="sha256-xKeoJ50pzbUGkpQxDYHD7o7hxe0LaOGeguUidbq6vis=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"
+		integrity="sha256-xKeoJ50pzbUGkpQxDYHD7o7hxe0LaOGeguUidbq6vis=" crossorigin="anonymous"></script>
 	<link rel="icon" type="image/png" href="https://bulma.io/favicons/favicon-32x32.png?v=201701041855">
-  </head>
-  <body>
-  <section class="section">
-    <div class="container">
-      <h1 class="title">
-        Random Numbers with Probability Distribution
-      </h1>
-      <p class="subtitle">
-        This site is built with <strong>Python</strong> and <strong>Flask</strong>, it uses <strong>Bulma</strong> and <strong>Chart.js</strong>!
-	  </p>
+</head>
 
-	  <div class="box">
-		<div class="container">
-			<canvas id="chartCanvas"></canvas>
-			<br>
+<body>
+	<div class="columns">
+		<div class="column;width=100px">
+			<section class="section">
+				<aside class="menu">
+					<p class="menu-label">
+					  General
+					</p>
+					<ul class="menu-list">
+					  <li><a href="#">Dashboard</a></li>
+					  <li><a href="{{ url_for('preferences') }}">Preferences</a></li>
+					  {% for item in employees %}
+					  <li><a href="{{ url_for('preferences')}}">{{ item }}</a></li>
+					  {% endfor %}
+						
+					</ul>
+				  </aside>
+			</section>
 		</div>
-		<article class="media">
-			<div class="media-left">
-			<figure class="image is-128x128">
-				<img class="is-rounded" src="https://rodolfoferro.glitch.me/static/img/rodo.gif" alt="Image">
-			</figure>
-			</div>
-			<div class="media-content">
-			<div class="content">
-				<p>
-				<strong>Rodolfo Ferro</strong> <small>@FerroRodolfo</small> <small>31m</small>
-				<br>
-				I am a science enthusiast, an AI practitioner experienced in the development of tech solutions using automation, artificial intelligence models, web services, computer vision, data extraction and data analysis. Helping startups and entrepreneurs with the power of AI. An eternal learner.
-				</p>
-			</div>
-			<nav class="level is-mobile">
-				<div class="level-left">
-				<a class="level-item" href="https://github.com/RodolfoFerro">
-					<span class="icon is-small">
-						<i class="fab fa-github"></i>
-					</span>
-				</a>
-				<a class="level-item" href="https://twitter.com/FerroRodolfo">
-					<span class="icon is-small">
-					<i class="fab fa-twitter" aria-hidden="true"></i>
-					</span>
-				</a>
-				<a class="level-item" href="https://rodolfoferro.glitch.me">
-					<span class="icon is-small">
-					<i class="fas fa-globe" aria-hidden="true"></i>
-					</span>
-				</a>
+		<div class="column">
+			<section class="section">
+				<div class="container">
+					<div class="box">
+						<div class="container">
+							<form action="http://127.0.0.1:5000/import" method="POST" enctype="multipart/form-data">
+								<div class="file has-name is-fullwidth">
+									<label class="file-label">
+									  <input class="file-input" type="file" name="file" id="file_input">
+									  <span class="file-cta">
+										<span class="file-icon">
+										  <i class="fas fa-upload"></i>
+										</span>
+										<span class="file-label">
+										  Choose a file…
+										</span>
+									  </span>
+									  <span class="file-name">
+										...
+									  </span>
+									</label>
+									<div class="field">
+										<button class="button is-success">
+											Upload
+										</button>
+									</div>
+								  </div>
+							</form>
+							<br>
+						</div>
+					</div>
+			</section>
+			<section class="section">
+				<div class="container">
+					<div class="columns">
+						<div class="column">
+							<div class="box">
+								<h1 class="title">
+									{{ employees_count }}
+								</h1>
+								<p class="subtitle">
+									Employees
+								</p>
+							</div>
+						</div>
+						<div class="column">
+							<div class="box">
+								<h1 class="title">
+									{{ hours_count }}
+								</h1>
+								<p class="subtitle">
+									Hours
+								</p>
+							</div>
+						</div>
+						<div class="column">
+							<div class="box">
+								<h1 class="title">
+									{{ bookings_count }}
+								</h1>
+								<p class="subtitle">
+									Bookings
+								</p>
+							</div>
+						</div>
+						<div class="column">
+							<div class="box">
+								<h1 class="title">
+									{{ hours_per_employee }}
+								</h1>
+								<p class="subtitle">
+									Hours per Employee
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
-			</nav>
-			</div>
-		</article>
+			</section>
+			<div class="container">
+				<div class="columns">
+					<div class="column">
+						<div class="box">
+							<div class="container">
+								<canvas id="chart_canvas_operations"></canvas>
+								<br>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="columns">
+					<div class="column">
+						<div class="box">
+							<div class="container">
+								<canvas id="chart_canvas_admin"></canvas>
+								<br>
+							</div>
+						</div>
+					</div>
+					<div class="column">
+						<div class="box">
+							<div class="container">
+								<canvas id="chart_canvas_project"></canvas>
+								<br>
+							</div>
+						</div>
+					</div>
+				</div>
 		</div>
-  </section>
-
-  <script>
-	  var ctx = document.getElementById('chartCanvas').getContext('2d');
-
-	  var chart = new Chart(ctx, {
-			type: 'line',
-			data: {
-				labels: [{% for item in nlabels %}"{{ item }}",{% endfor %}],
-				datasets: [{
-					label: 'Ocurrences for Gaussian Distribution',
-					data: {{ nvalues }},
-					backgroundColor: '{{ ncolor }}',
-					borderColor: '{{ ncolor }}',
+	</div>
+	
+	<script>
+		var chart_data_operations = {
+				labels : [{% for item in operations_labels %}
+				"{{item}}",
+				{% endfor %}],
+				datasets : [{
+					label: 'Operations',
+					backgroundColor: '{{ operations_color }}',
+					borderColor: '{{ operations_color }}',
 					borderWidth: 2,
 					fill: true,
 					pointBorderWidth: 1,
 					pointHoverRadius: 5,
-					pointHoverBackgroundColor: '{{ ncolor }}',
-					pointHoverBorderColor: '{{ ncolor }}',
+					pointHoverBackgroundColor: '{{ operations_color }}',
+					pointHoverBorderColor: '{{ operations_color }}',
 					pointHoverBorderWidth: 2,
 					pointRadius: 1,
-					pointHitRadius: 10
+					pointHitRadius: 10,
+					data: [{% for item in operations_values %}
+					{{item}},
+					{% endfor %}],
+					spanGaps: false
 				},
 				{
-					label: 'Ocurrences for Gumbel Distribution',
-					data: {{ gvalues }},
-					backgroundColor: '{{ gcolor }}',
-					borderColor: '{{ gcolor }}',
+					label: 'Project',
+					backgroundColor: '{{ project_color }}',
+					borderColor: '{{ project_color }}',
 					borderWidth: 2,
 					fill: true,
 					pointBorderWidth: 1,
 					pointHoverRadius: 5,
-					pointHoverBackgroundColor: '{{ gcolor }}',
-					pointHoverBorderColor: '{{ gcolor }}',
+					pointHoverBackgroundColor: '{{ project_color }}',
+					pointHoverBorderColor: '{{ project_color }}',
 					pointHoverBorderWidth: 2,
 					pointRadius: 1,
-					pointHitRadius: 10
+					pointHitRadius: 10,
+					data: [{% for item in project_values %}
+					{{item}},
+					{% endfor %}],
+					spanGaps: false
 				},
 				{
-					label: 'Ocurrences for Weibull Distribution',
-					data: {{ wvalues }},
-					backgroundColor: '{{ wcolor }}',
-					borderColor: '{{ wcolor }}',
+					label: 'Admin',
+					backgroundColor: '{{ admin_color }}',
+					borderColor: '{{ admin_color }}',
 					borderWidth: 2,
 					fill: true,
 					pointBorderWidth: 1,
 					pointHoverRadius: 5,
-					pointHoverBackgroundColor: '{{ wcolor }}',
-					pointHoverBorderColor: '{{ wcolor }}',
+					pointHoverBackgroundColor: '{{ admin_color }}',
+					pointHoverBorderColor: '{{ admin_color }}',
 					pointHoverBorderWidth: 2,
 					pointRadius: 1,
-					pointHitRadius: 10
-				}
+					pointHitRadius: 10,
+					data: [{% for item in admin_values %}
+					{{item}},
+					{% endfor %}],
+					spanGaps: false
+				}	
 			]
-			},
-			options: {
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: true
-						}
-					}]
-				}
-			}
+		}
+
+		var chart_data_project = {
+			labels : [{% for item in project_labels %}
+			"{{item}}",
+			{% endfor %}],
+			datasets : [{
+				label: 'Project',
+				fill: true,
+				lineTension: 0.1,
+				backgroundColor: "rgba(75,192,192,0.4)",
+				borderColor: "rgba(75,192,192,1)",
+				borderCapStyle: 'butt',
+				borderDash: [],
+				borderDashOffset: 0.0,
+				borderJoinStyle: 'miter',
+				pointBorderColor: "rgba(75,192,192,1)",
+				pointBackgroundColor: "#fff",
+				pointBorderWidth: 1,
+				pointHoverRadius: 5,
+				pointHoverBackgroundColor: "rgba(75,192,192,1)",
+				pointHoverBorderColor: "rgba(220,220,220,1)",
+				pointHoverBorderWidth: 2,
+				pointRadius: 1,
+				pointHitRadius: 10,
+				data : [{% for item in project_values %}
+				{{item}},
+				{% endfor %}],
+				spanGaps: false
+			}]
+		}
+
+		var chart_data_admin = {
+			labels : [{% for item in admin_labels %}
+			"{{item}}",
+			{% endfor %}],
+			datasets : [{
+			label: 'Admin',
+			fill: true,
+			lineTension: 0.1,
+			backgroundColor: "rgba(75,192,192,0.4)",
+			borderColor: "rgba(75,192,192,1)",
+			borderCapStyle: 'butt',
+			borderDash: [],
+			borderDashOffset: 0.0,
+			borderJoinStyle: 'miter',
+			pointBorderColor: "rgba(75,192,192,1)",
+			pointBackgroundColor: "#fff",
+			pointBorderWidth: 1,
+			pointHoverRadius: 5,
+			pointHoverBackgroundColor: "rgba(75,192,192,1)",
+			pointHoverBorderColor: "rgba(220,220,220,1)",
+			pointHoverBorderWidth: 2,
+			pointRadius: 1,
+			pointHitRadius: 10,
+			data : [{% for item in admin_values %}
+			{{item}},
+			{% endfor %}],
+			spanGaps: false
+			}]
+		}
+		
+		// get chart canvas
+		var ctx_canvas_operations = document.getElementById("chart_canvas_operations").getContext("2d");
+		var ctx_canvas_project = document.getElementById("chart_canvas_project").getContext("2d");
+		var ctx_canvas_admin = document.getElementById("chart_canvas_admin").getContext("2d");
+		
+		// create the chart using the chart canvas
+		var chart_operations = new Chart(ctx_canvas_operations, {
+			type: 'line',
+			data: chart_data_operations,
 		});
-  </script>
-  </body>
+		var chart_project = new Chart(ctx_canvas_project, {
+			type: 'line',
+			data: chart_data_project,
+		});
+		var chart_project = new Chart(ctx_canvas_admin, {
+			type: 'line',
+			data: chart_data_admin,
+		});
+	</script>
+</body>
+
 </html>
